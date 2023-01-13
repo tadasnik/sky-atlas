@@ -1,12 +1,10 @@
 <script>
 	import { getContext } from 'svelte';
-	import { geoPath, geoStereographic, geoGraticule10, geoCircle } from 'd3-geo';
-	import { scaleLinear } from 'd3-scale';
+	import { geoPath } from 'd3-geo';
 	import ufgs from '$lib/data/big_gal.json';
 
 	export let projectionFn;
 	export let zoomTransform;
-	export let mag_th;
 
 	const { width, height } = getContext('LayerCake');
 
@@ -55,17 +53,9 @@
 	.map-group {
 		margin: auto;
 	}
-	path {
-		fill: none;
-		stroke: lightgray;
-	}
-	.asterisms {
-		fill: none;
-		stroke: darkgray;
-	}
 	ellipse {
-		fill: yellow;
-		stroke: purple;
-		stroke-width: 1;
+		fill: lightblue;
+		stroke: blue;
+		stroke-width: 0.5;
 	}
 </style>

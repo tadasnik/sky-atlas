@@ -4,7 +4,7 @@
 	import { geoPath, geoGraticule10 } from 'd3-geo';
 	import { scaleLinear } from 'd3-scale';
 	import milkyway from '$lib/data/milkyway.json';
-	import stars from '$lib/data/stars.8.json';
+	import stars from '$lib/data/stars.6.json';
 	import constellations from '$lib/data/constellations.lines.json';
 	import constellations_borders from '$lib/data/constellations_borders.json';
 	import ufgs from '$lib/data/ufg.json';
@@ -60,11 +60,6 @@
 	$: visibleUfgs = ufgs.filter((ufg) =>
 		isVisible({ type: 'Point', coordinates: [ufg.ra, ufg.dec] })
 	);
-
-	$: console.log(visibleStars);
-	$: pix_dif =
-		projectionFn.invert([$width / 2 + 50, $height / 2])[0] -
-		projectionFn.invert([$width / 2 - 50, $height / 2])[0];
 
 	$: {
 		if ($ctx && geoPath) {
