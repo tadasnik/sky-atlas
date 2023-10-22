@@ -1,13 +1,10 @@
 <script>
 	import { LayerCake, Svg, Canvas } from 'layercake';
+	import { geoPath } from 'd3-geo';
 	import { geoAiry } from 'd3-geo-projection';
 	import { select, zoom } from 'd3';
 	import SkyCanvas from '$lib/components/SkyCanvas.svelte';
 	import SkySvg from '$lib/components/SkySvg.svelte';
-
-	import { getContext } from 'svelte';
-	import { geoPath, geoClipRectangle } from 'd3-geo';
-	import { scaleLinear } from 'd3-scale';
 
 	export let width;
 	export let height;
@@ -19,7 +16,6 @@
 	let zoomTransform = { k: 1, x: 0, y: 0 };
 
 	const projection = geoAiry;
-	const buff = 10;
 
 	$: zoomX = zoom()
 		.scaleExtent([1, 15])
