@@ -2,8 +2,9 @@
   import { DateInput } from "date-picker-svelte";
   import { select, zoom } from "d3";
   import Sky from "$lib/components/Sky.svelte";
+  import { SiderealTime } from "$lib/astronomy/astronomy.ts";
 
-  let date = new Date();
+  let localDateTime = new Date();
   let skycanvas;
   let zoomTransform = { k: 1, x: 0, y: 0 };
   let width;
@@ -30,15 +31,18 @@
   $: if (skycanvas) {
     select(skycanvas).call(zoomX);
   }
+  $: console.log("sidereal time : ", SiderealTime(localDateTime));
+  $: localAngle = 15 * SiderealTime(localDateTime);
+  $: console.log("local angle : ", localAngle);
 </script>
 
 <div class="outer-wrapper">
   <div class="controls">
-    <DateInput bind:value={date} format="yyyy-MM-dd HH:mm" />
-    <label>
-      <input type="date" placeholder="YYYY-MM-DD" />
-      <input type="time" placeholder="HH-MM" />
-    </label>
+    <DateInput
+      bind:value={localDateTime}
+      format="yyyy-MM-dd HH:mm"
+      timePrecision="minute"
+    />
     <label>
       <input
         type="range"
@@ -63,7 +67,7 @@
     bind:clientWidth={width}
     bind:clientHeight={height}
   >
-    <Sky {width} {height} {longitude} {latitude} {mag_th} />
+    <Sky {width} {height} longitude={localAngle} {latitude} {mag_th} />
   </div>
 </div>
 
