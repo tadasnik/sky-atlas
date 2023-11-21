@@ -1,61 +1,62 @@
 <script>
-	import { getContext } from 'svelte';
-	import { geoPath } from 'd3-geo';
-	import ufgs from '$lib/data/big_gal.json';
+  import { getContext } from "svelte";
+  import { geoPath } from "d3-geo";
+  import ufgs from "$lib/data/big_gal.json";
 
-	export let projectionFn;
-	export let zoomTransform;
+  export let projectionFn;
+  export let zoomTransform;
 
-	const { width, height } = getContext('LayerCake');
+  const { width, height } = getContext("LayerCake");
 
-	$: geoPathFn = geoPath(projectionFn);
+  $: geoPathFn = geoPath(projectionFn);
 
-	$: makeEllipse = (d) => {
-		const centroid = projectionFn([d.ra, d.dec]);
-		const pole = projectionFn([0, 90]);
-		const angle =
-			(Math.atan2(centroid[1] - pole[1], centroid[0] - pole[0]) * 180) / Math.PI -
-			90 -
-			d.GALDIM_ANGLE;
-		// const start = projectionFn([d.st_end[0][0], d.st_end[0][1]]);
-		// const end = projectionFn([d.st_end[1][0], d.st_end[1][1]]);
+  $: makeEllipse = (d) => {
+    const centroid = projectionFn([d.ra, d.dec]);
+    const pole = projectionFn([0, 90]);
+    const angle =
+      (Math.atan2(centroid[1] - pole[1], centroid[0] - pole[0]) * 180) /
+        Math.PI -
+      90 -
+      d.GALDIM_ANGLE;
+    // const start = projectionFn([d.st_end[0][0], d.st_end[0][1]]);
+    // const end = projectionFn([d.st_end[1][0], d.st_end[1][1]]);
 
-		//const ra_point = projectionFn([d.ra - d.GALDIM_MINAXIS / 60, d.dec]);
-		//const radius = Math.abs(centroid[0] - ra_point[0]) / 2;
-		const ellipticity = d.GALDIM_MAJAXIS / d.GALDIM_MINAXIS;
-		return { coords: centroid, angle: angle, ellipticity: ellipticity };
-	};
+    //const ra_point = projectionFn([d.ra - d.GALDIM_MINAXIS / 60, d.dec]);
+    //const radius = Math.abs(centroid[0] - ra_point[0]) / 2;
+    const ellipticity = d.GALDIM_MAJAXIS / d.GALDIM_MINAXIS;
+    return { coords: centroid, angle: angle, ellipticity: ellipticity };
+  };
 
-	$: isVisible = (d) => {
-		const visible = geoPathFn({ type: 'Point', coordinates: [d.ra, d.dec] });
-		return visible ? true : false;
-	};
+  $: isVisible = (d) => {
+    const visible = geoPathFn({ type: "Point", coordinates: [d.ra, d.dec] });
+    return visible ? true : false;
+  };
 </script>
 
 <g class="map-group">
-	{#each ufgs as ufg}
-		{#if isVisible(ufg)}
-			{@const ell = makeEllipse(ufg)}
-			<ellipse
-				cx={ell.coords[0]}
-				cy={ell.coords[1]}
-				rx={1}
-				ry={1 * ell.ellipticity}
-				transform="translate({zoomTransform.x}, {zoomTransform.y})
+  {#each ufgs as ufg}
+    {#if isVisible(ufg)}
+      {@const ell = makeEllipse(ufg)}
+      <ellipse
+        cx={ell.coords[0]}
+        cy={ell.coords[1]}
+        rx={1}
+        ry={1 * ell.ellipticity}
+        transform="translate({zoomTransform.x}, {zoomTransform.y})
                    scale({zoomTransform.k}, {zoomTransform.k})
                    rotate({ell.angle} {ell.coords[0]} {ell.coords[1]})"
-			/>
-		{/if}
-	{/each}
+      />
+    {/if}
+  {/each}
 </g>
 
 <style>
-	.map-group {
-		margin: auto;
-	}
-	ellipse {
-		fill: lightblue;
-		stroke: blue;
-		stroke-width: 0.5;
-	}
+  .map-group {
+    margin: auto;
+  }
+  ellipse {
+    fill: lightblue;
+    stroke: blue;
+    stroke-width: 0.5;
+  }
 </style>
