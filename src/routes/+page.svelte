@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte";
   import { DateInput } from "date-picker-svelte";
   import { select, zoom } from "d3";
   import Sky from "$lib/components/Sky.svelte";
@@ -9,8 +10,23 @@
   let zoomTransform = { k: 1, x: 0, y: 0 };
   let width;
   let height;
+  let time = new Date();
+  onMount(() => {
+    const interval = setInterval(() => {
+      time = new Date();
+    }, 1000 * 60);
 
-  $: latitude = 50;
+    return () => {
+      clearInterval(interval);
+    };
+  });
+  // these automatically update when `time`
+  // changes, because of the `$:` prefix
+  $: hours = time.getHours();
+  $: minutes = time.getMinutes();
+  $: console.log(hours, minutes);
+
+  let latitude = 50;
   $: longitude = 0;
   $: mag_th = 5;
 
@@ -28,18 +44,32 @@
     zoomTransform.y = e.transform.y;
   }
 
+  const successCallback = (position) => {
+    console.log(position);
+  };
+
+  const errorCallback = (error) => {
+    console.log("there was ", error);
+  };
+
   $: if (skycanvas) {
     select(skycanvas).call(zoomX);
   }
-  $: console.log("sidereal time : ", SiderealTime(localDateTime));
-  $: localAngle = 15 * SiderealTime(localDateTime);
+  $: console.log("sidereal time : ", SiderealTime(time));
+  $: localAngle = 15 * SiderealTime(time);
   $: console.log("local angle : ", localAngle);
+  onMount(() => {
+    console.log(
+      "location ",
+      navigator.geolocation.getCurrentPosition(successCallback, errorCallback)
+    );
+  });
 </script>
 
 <div class="outer-wrapper">
   <div class="controls">
     <DateInput
-      bind:value={localDateTime}
+      bind:value={time}
       format="yyyy-MM-dd HH:mm"
       timePrecision="minute"
     />
