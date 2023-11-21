@@ -5,11 +5,12 @@
   import Sky from "$lib/components/Sky.svelte";
   import { SiderealTime } from "$lib/astronomy/astronomy.ts";
 
-  let localDateTime = new Date();
   let skycanvas;
   let zoomTransform = { k: 1, x: 0, y: 0 };
   let width;
   let height;
+  let latitude = 51.6;
+  let mag_th = 6;
   let time = new Date();
   onMount(() => {
     const interval = setInterval(() => {
@@ -22,13 +23,6 @@
   });
   // these automatically update when `time`
   // changes, because of the `$:` prefix
-  $: hours = time.getHours();
-  $: minutes = time.getMinutes();
-  $: console.log(hours, minutes);
-
-  let latitude = 50;
-  $: longitude = 0;
-  $: mag_th = 5;
 
   $: zoomX = zoom()
     .scaleExtent([1, 5])
@@ -55,15 +49,15 @@
   $: if (skycanvas) {
     select(skycanvas).call(zoomX);
   }
-  $: console.log("sidereal time : ", SiderealTime(time));
+  // $: console.log("sidereal time : ", SiderealTime(time));
   $: localAngle = 15 * SiderealTime(time);
-  $: console.log("local angle : ", localAngle);
-  onMount(() => {
-    console.log(
-      "location ",
-      navigator.geolocation.getCurrentPosition(successCallback, errorCallback)
-    );
-  });
+  // $: console.log("local angle : ", localAngle);
+  // onMount(() => {
+  //   console.log(
+  //     "location ",
+  //     navigator.geolocation.getCurrentPosition(successCallback, errorCallback)
+  //   );
+  // });
 </script>
 
 <div class="outer-wrapper">
@@ -73,22 +67,24 @@
       format="yyyy-MM-dd HH:mm"
       timePrecision="minute"
     />
-    <label>
-      <input
-        type="range"
-        min="0"
-        max="360"
-        bind:value={longitude}
-        step="0.01"
-      />
-      <input type="number" bind:value={longitude} min="0" max="360" />
-    </label>
+    <!-- <label> -->
+    <!--   <input -->
+    <!--     type="range" -->
+    <!--     min="0" -->
+    <!--     max="360" -->
+    <!--     bind:value={longitude} -->
+    <!--     step="0.01" -->
+    <!--   /> -->
+    <!--   <input type="number" bind:value={longitude} min="0" max="360" /> -->
+    <!-- </label> -->
 
     <label>
+      Observer latitude
       <input type="number" bind:value={latitude} min="-90" max="90" />
     </label>
 
     <label>
+      Limiting star magnitude
       <input type="number" bind:value={mag_th} min="0" max="14" step="0.1" />
     </label>
   </div>
